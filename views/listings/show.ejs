@@ -15,11 +15,11 @@
             <div>
               <h2 class="fw-bold mb-2 listing-title"><%= listingData.title %></h2>
               <% if (listingData.owner && listingData.owner.username) { %>
-                <p class="mb-2 text-muted">Owned by <b>@<%= listingData.owner.username %></b></p>
+                <p id="listing-owner" class="mb-2 text-muted">Owned by <b>@<%= listingData.owner.username %></b></p>
               <% } %>
               <p class="mb-3"><%= listingData.description %></p>
               <div class="mb-2">
-                <span class="badge bg-primary fs-6">&#8377; <%= listingData.price.toLocaleString("en-IN") %></span>
+                <span id="listing-price" class="badge bg-primary fs-6">&#8377; <%= listingData.price.toLocaleString("en-IN") %></span>
               </div>
               <div class="mb-2">
                 <i class="fa fa-map-marker-alt listing-location"></i>
@@ -115,19 +115,3 @@
     </div>
   </div>
 </div>
-
-<!-- Map Section -->
-<div class="map-container">
-  <input id="search-box" type="text" placeholder="Search location..." />
-  <div id="map" class="map-fade-in"></div>
-</div>
-
-<!-- External JavaScript -->
-<script src="/js/show-listing.js"></script>
-
-<!-- Google Maps API -->
-<script
-  src="https://maps.gomaps.pro/maps/api/js?key=<%= process.env.MAP_API_Token %>&libraries=places,geometry&callback=initMap"
-  async
-  defer
-></script>

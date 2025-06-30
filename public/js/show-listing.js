@@ -3,8 +3,7 @@
 // Global variables
 let map;
 let marker;
-let listingLocation = null;
-let listingCountry = null;
+let listingLatLng = null;
 let infoPanel = null;
 let legend = null;
 
@@ -13,14 +12,8 @@ function initMap() {
   // Show loading state
   showMapLoading();
   
-  // Get listing location from the page
-  const locationElement = document.querySelector('.listing-location');
-  if (locationElement) {
-    const locationText = locationElement.nextElementSibling.textContent.trim();
-    const locationParts = locationText.split(', ');
-    listingLocation = locationParts[0];
-    listingCountry = locationParts[1] || '';
-  }
+  // Get listing location from the global variable created in the EJS template
+  const { location, country } = window.listingDataForMap;
 
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 28.6139, lng: 77.2090 }, // Default to Delhi coordinates
@@ -56,8 +49,8 @@ function initMap() {
   }
 
   // Set the listing location as the destination
-  if (listingLocation && listingCountry) {
-    setListingDestination();
+  if (location && country) {
+    setListingDestination(location, country);
   }
 
   // Hide loading after map is ready
@@ -70,88 +63,127 @@ function initMap() {
 function getCustomMapStyle() {
   return [
     {
-      featureType: "poi",
-      elementType: "labels",
-      stylers: [{ visibility: "off" }]
+      featureType: 'all',
+      elementType: 'labels.text.fill',
+      stylers: [{ color: '#ffffff' }],
     },
     {
-      featureType: "transit",
-      elementType: "labels",
-      stylers: [{ visibility: "off" }]
+      featureType: 'all',
+      elementType: 'labels.text.stroke',
+      stylers: [{ color: '#000000' }, { lightness: 13 }],
     },
     {
-      featureType: "landscape",
-      elementType: "geometry",
-      stylers: [{ color: "#f5f5f5" }]
+      featureType: 'administrative',
+      elementType: 'geometry.fill',
+      stylers: [{ color: '#000000' }],
     },
     {
-      featureType: "water",
-      elementType: "geometry",
-      stylers: [{ color: "#e3f2fd" }]
+      featureType: 'administrative',
+      elementType: 'geometry.stroke',
+      stylers: [{ color: '#144b53' }, { lightness: 14 }, { weight: 1.4 }],
     },
     {
-      featureType: "road",
-      elementType: "geometry",
-      stylers: [{ color: "#ffffff" }]
+      featureType: 'landscape',
+      elementType: 'all',
+      stylers: [{ color: '#08304b' }],
     },
     {
-      featureType: "road",
-      elementType: "labels.text.fill",
-      stylers: [{ color: "#64748b" }]
-    }
+      featureType: 'poi',
+      elementType: 'geometry',
+      stylers: [{ color: '#0c4152' }, { lightness: 5 }],
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.fill',
+      stylers: [{ color: '#000000' }],
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.stroke',
+      stylers: [{ color: '#0b434f' }, { lightness: 25 }],
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'geometry.fill',
+      stylers: [{ color: '#000000' }],
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'geometry.stroke',
+      stylers: [{ color: '#0b3d51' }, { lightness: 16 }],
+    },
+    {
+      featureType: 'road.local',
+      elementType: 'geometry',
+      stylers: [{ color: '#000000' }],
+    },
+    {
+      featureType: 'transit',
+      elementType: 'all',
+      stylers: [{ color: '#146474' }],
+    },
+    {
+      featureType: 'water',
+      elementType: 'all',
+      stylers: [{ color: '#021019' }],
+    },
   ];
 }
 
 // Set the listing destination on the map
-function setListingDestination() {
-  const fullAddress = `${listingLocation}, ${listingCountry}`;
+function setListingDestination(location, country) {
+  const fullAddress = `${location}, ${country}`;
   
   // Use Google Maps Geocoding service to get coordinates
   const geocoder = new google.maps.Geocoder();
   
   geocoder.geocode({ address: fullAddress }, (results, status) => {
     if (status === 'OK' && results[0]) {
-      const location = results[0].geometry.location;
+      listingLatLng = results[0].geometry.location;
       
+      // Center map on the listing location
+      map.setCenter(listingLatLng);
+      map.setZoom(15);
+
       // Clear any existing marker
       if (marker) marker.setMap(null);
       
       // Create a custom marker for the listing
       marker = new google.maps.Marker({
         map: map,
-        position: location,
+        position: listingLatLng,
         title: fullAddress,
         animation: google.maps.Animation.DROP,
         icon: {
-          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+          url:
+            'data:image/svg+xml;charset=UTF-8,' +
+            encodeURIComponent(
+              `
             <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="20" cy="20" r="18" fill="#2563eb" stroke="white" stroke-width="2"/>
+              <circle cx="20" cy="20" r="18" fill="#FFA500" stroke="white" stroke-width="2"/>
               <path d="M20 8c-4.4 0-8 3.6-8 8 0 5.4 8 16 8 16s8-10.6 8-16c0-4.4-3.6-8-8-8zm0 12c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z" fill="white"/>
             </svg>
-          `),
+          `
+            ),
           scaledSize: new google.maps.Size(40, 40),
-          anchor: new google.maps.Point(20, 40)
-        }
+          anchor: new google.maps.Point(20, 40),
+        },
       });
 
       // Add custom marker class for styling
       marker.addListener('click', () => {
-        showInfoPanel(location, fullAddress);
+        showInfoPanel(listingLatLng, fullAddress);
       });
-
-      // Center map on the listing location
-      map.setCenter(location);
-      map.setZoom(15);
 
       // Show info panel by default
       setTimeout(() => {
-        showInfoPanel(location, fullAddress);
+        showInfoPanel(listingLatLng, fullAddress);
       }, 1000);
 
       // Update search box placeholder
       const searchBox = document.getElementById("search-box");
       if (searchBox) {
-        searchBox.placeholder = `Search near ${listingLocation}...`;
+        searchBox.placeholder = `Search near ${location}...`;
       }
 
       // Add map legend
@@ -366,6 +398,21 @@ function hideMapLoading() {
 function getListingTitle() {
   const titleElement = document.querySelector('.listing-title');
   return titleElement ? titleElement.textContent.trim() : 'Listing Location';
+}
+
+// Get listing price from the page
+function getListingPrice() {
+  const priceElement = document.getElementById('listing-price');
+  return priceElement ? priceElement.textContent.trim() : 'N/A';
+}
+
+// Get listing owner from the page
+function getListingOwner() {
+  const ownerElement = document.getElementById('listing-owner');
+  if (ownerElement) {
+    return ownerElement.textContent.replace('Owned by', '').trim();
+  }
+  return 'N/A';
 }
 
 // Star Rating Functionality
@@ -647,7 +694,7 @@ function addMapControls() {
     <button class="map-control-btn" onclick="getCurrentLocation()" title="Get My Location">
       <i class="fa fa-crosshairs"></i>
     </button>
-    <button class="map-control-btn" onclick="resetToListing()" title="Show Listing Location">
+    <button class="map-control-btn listing-location-btn" onclick="resetToListing()" title="Show Listing Location">
       <i class="fa fa-home"></i>
     </button>
     <button class="map-control-btn" onclick="resetMap()" title="Reset Map">
@@ -660,8 +707,14 @@ function addMapControls() {
 
 // Reset map to listing location
 function resetToListing() {
-  if (listingLocation && listingCountry) {
-    setListingDestination();
+  if (listingLatLng) {
+    map.setCenter(listingLatLng);
+    map.setZoom(15);
+  } else if (window.listingDataForMap) {
+    const { location, country } = window.listingDataForMap;
+    if (location && country) {
+      setListingDestination(location, country);
+    }
   }
 }
 
