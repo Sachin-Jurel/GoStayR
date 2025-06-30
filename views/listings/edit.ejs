@@ -1,0 +1,56 @@
+<% layout('/layouts/boilerplate') -%>
+
+<div class="row justify-content-center align-items-center" style="min-height: 90vh; margin-top: 10px; margin-bottom: 10px;">
+  <div class="col-12 col-md-10 col-lg-8">
+    <div class="card shadow-lg p-4 border-0 rounded-4">
+      <div class="text-center mb-4">
+        <h2 class="fw-bold" style="color: #2563eb; letter-spacing: 1px;"><u>Edit Listing</u></h2>
+      </div>
+      <form method="post" action="/listings/<%= listingData._id %>?_method=put" enctype="multipart/form-data" novalidate class="needs-validation">
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" name="listing[title]" value="<%= listingData.title %>" class="form-control form-control-lg" required>
+          <div class="valid-feedback">Title looks good!</div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea name="listing[description]" class="form-control form-control-lg" required><%= listingData.description %></textarea>
+          <div class="invalid-feedback">Describe your villa</div>
+        </div>
+        <div class="mb-3">
+          <label for="image" class="form-label">Upload New Image</label>
+          <input type="file" name="listing[image]" class="form-control">
+          <div class="invalid-feedback">Please upload an image</div>
+          <% if (listingData.image && listingData.image.url) { %>
+            <div class="mt-2">
+              <img src="<%= listingData.image.url %>" alt="Current Image" class="img-fluid rounded shadow-sm" style="max-width: 180px;">
+            </div>
+          <% } %>
+          <input type="hidden" name="oldImageUrl" value="<%= listingData.image ? listingData.image.url : '' %>">
+          <input type="hidden" name="oldImageFilename" value="<%= listingData.image ? listingData.image.filename : '' %>">
+        </div>
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label for="price" class="form-label">Price</label>
+            <input type="number" name="listing[price]" value="<%= listingData.price %>" class="form-control form-control-lg" required>
+            <div class="invalid-feedback">Enter your villa price</div>
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="country" class="form-label">Country</label>
+            <input type="text" name="listing[country]" value="<%= listingData.country %>" class="form-control form-control-lg" required>
+            <div class="invalid-feedback">Enter country name</div>
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" name="listing[location]" value="<%= listingData.location %>" class="form-control form-control-lg" required>
+            <div class="invalid-feedback">Enter villa location</div>
+          </div>
+        </div>
+        <% if (listingData.owner) { %>
+          <p>Owned by <b>@<%= listingData.owner.username %></b></p>
+        <% } %>
+        <button type="submit" class="btn btn-lg w-100 text-white" style="background-color: #2563eb; border-radius: 1.5rem; font-weight: 600;">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</div>

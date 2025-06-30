@@ -1,0 +1,133 @@
+<% layout('/layouts/boilerplate') -%>
+
+<!-- External CSS -->
+<link rel="stylesheet" href="/css/show-listing.css">
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card shadow-lg border-0 rounded-4 mb-4">
+        <div class="row g-0">
+          <div class="col-md-6">
+            <img src="<%= listingData.image.url %>" class="img-fluid rounded-start w-100 listing-image" alt="Listing Image">
+          </div>
+          <div class="col-md-6 d-flex flex-column justify-content-between p-4">
+            <div>
+              <h2 class="fw-bold mb-2 listing-title"><%= listingData.title %></h2>
+              <% if (listingData.owner && listingData.owner.username) { %>
+                <p class="mb-2 text-muted">Owned by <b>@<%= listingData.owner.username %></b></p>
+              <% } %>
+              <p class="mb-3"><%= listingData.description %></p>
+              <div class="mb-2">
+                <span class="badge bg-primary fs-6">&#8377; <%= listingData.price.toLocaleString("en-IN") %></span>
+              </div>
+              <div class="mb-2">
+                <i class="fa fa-map-marker-alt listing-location"></i>
+                <span class="fw-semibold"><%= listingData.location %>, <%= listingData.country %></span>
+              </div>
+            </div>
+            <% if(currUser && listingData.owner && currUser._id.equals(listingData.owner._id)){ %>
+              <div class="d-flex gap-2 mt-3">
+                <a href="/listings/<%= listingData._id %>/edit" class="btn btn-outline-primary flex-fill"><i class="fa fa-edit me-1"></i>Edit</a>
+                <form method="post" action="/listings/<%= listingData._id %>?_method=delete" class="flex-fill">
+                  <button type="submit" class="btn btn-outline-danger w-100"><i class="fa fa-trash me-1"></i>Delete</button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if(currUser){ %>
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card shadow-sm border-0 rounded-4 mb-4 p-4 review-card">
+        <div class="d-flex align-items-center mb-3">
+          <i class="fa fa-pen-fancy fa-2x me-2 review-icon"></i>
+          <h4 class="fw-bold mb-0 review-title">Leave a Review</h4>
+        </div>
+        <form action="/listings/<%= listingData._id %>/reviews" method="post" novalidate class="needs-validation">
+          <div class="mb-3">
+            <label for="rating" class="form-label">Rating</label>
+            <div id="star-rating" class="mb-2">
+              <% for(let i=1; i<=5; i++){ %>
+                <i class="fa fa-star star-select" data-value="<%= i %>"></i>
+              <% } %>
+            </div>
+            <input type="hidden" name="review[rating]" id="rating-value" value="1">
+          </div>
+          <div class="mb-3">
+            <label for="comments" class="form-label">Comment</label>
+            <textarea name="review[comment]" cols="30" rows="3" id="comment" class="form-control form-control-lg" placeholder="Write your review here..." required></textarea>
+            <div class="invalid-feedback">Write a comment</div>
+          </div>
+          <button class="btn btn-lg w-100 text-white submit-review-btn">Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card shadow-sm border-0 rounded-4 p-4">
+        <h4 class="fw-bold mb-3 d-flex align-items-center reviews-header"><i class="fa fa-comments me-2"></i>All Reviews</h4>
+        <div class="row g-4">
+          <% if (listingData.reviews && listingData.reviews.length > 0) { %>
+            <% for( review of listingData.reviews) {%>
+              <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm p-3 d-flex flex-column justify-content-between review-card-item">
+                  <div class="d-flex align-items-center mb-2">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center me-3 review-avatar">
+                      <i class="fa fa-user fa-lg" style="color: #2563eb;"></i>
+                    </div>
+                    <div>
+                      <h5 class="card-title mb-0 review-username"><b>@<%= review.author && review.author.username ? review.author.username : 'Anonymous' %></b></h5>
+                      <div class="d-flex align-items-center mt-1">
+                        <% for(let i=1; i<=5; i++){ %>
+                          <i class="fa fa-star review-star <%= i <= review.rating ? 'filled' : 'empty' %>"></i>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="card-text mt-2 mb-3" style="min-height: 48px;"><%= review.comment %></p>
+                  <% if(currUser && review.author && review.author._id && currUser._id.equals(review.author._id)){ %>
+                  <form method="post" action="/listings/<%= listingData._id %>/reviews/<%= review._id %>?_method=delete" class="mb-0">
+                    <button class="btn btn-outline-danger btn-sm w-100 delete-review-btn"><i class="fa fa-trash"></i> Delete</button>
+                  </form>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
+          <% } else { %>
+            <div class="col-12">
+              <div class="text-center py-4">
+                <i class="fa fa-comments fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No reviews yet</h5>
+                <p class="text-muted">Be the first to leave a review!</p>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Map Section -->
+<div class="map-container">
+  <input id="search-box" type="text" placeholder="Search location..." />
+  <div id="map" class="map-fade-in"></div>
+</div>
+
+<!-- External JavaScript -->
+<script src="/js/show-listing.js"></script>
+
+<!-- Google Maps API -->
+<script
+  src="https://maps.gomaps.pro/maps/api/js?key=<%= process.env.MAP_API_Token %>&libraries=places,geometry&callback=initMap"
+  async
+  defer
+></script>

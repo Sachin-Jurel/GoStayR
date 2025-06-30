@@ -1,0 +1,136 @@
+<nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom sticky-top" id="mainNavbar">
+  <div class="container-fluid px-3 px-lg-4">
+    <!-- Brand Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="/listings">
+      <img src="/GoStayR.png" alt="GoStayR Logo" height="40" class="navbar-logo">
+      <span class="navbar-brand-text">GoStayR</span>
+    </a>
+
+    <!-- Mobile Search Toggle -->
+    <button class="btn btn-outline-primary d-lg-none mobile-search-toggle" type="button" id="mobileSearchToggle">
+      <i class="fas fa-search"></i>
+    </button>
+
+    <!-- Desktop Search Form -->
+    <form class="navbar-search d-none d-lg-flex" role="search" action="/listings" method="get">
+      <div class="input-group">
+        <span class="input-group-text search-icon">
+          <i class="fas fa-search"></i>
+        </span>
+        <input class="form-control search-input" type="search" name="location" 
+               placeholder="Search by location..." aria-label="Search"
+               value="<%= locals.searchQuery || '' %>">
+        <button class="btn search-btn" type="submit">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </form>
+
+    <!-- Mobile Search Form (Hidden by default) -->
+    <div class="mobile-search-container d-lg-none" id="mobileSearchContainer">
+      <form class="mobile-search-form" role="search" action="/listings" method="get">
+        <div class="input-group">
+          <span class="input-group-text search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+          <input class="form-control search-input" type="search" name="location" 
+                 placeholder="Search by location..." aria-label="Search"
+                 value="<%= locals.searchQuery || '' %>">
+          <button class="btn search-btn" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="btn btn-outline-secondary" type="button" id="closeMobileSearch">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Hamburger Menu Button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav" aria-controls="navbarNav" 
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Menu -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="navbar-nav ms-auto align-items-center">
+        
+        <!-- Add New Listing Button -->
+        <div class="nav-item">
+          <a class="btn btn-primary add-listing-btn" href="/listings/new">
+            <i class="fas fa-plus me-1"></i>
+            <span class="btn-text">Add Listing</span>
+          </a>
+        </div>
+
+        <!-- User Authentication Links -->
+        <% if(!currUser){ %>
+          <div class="nav-item">
+            <a class="nav-link auth-link" href="/signup">
+              <i class="fas fa-user-plus me-2"></i>
+              <span>Sign Up</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link auth-link" href="/login">
+              <i class="fas fa-sign-in-alt me-2"></i>
+              <span>Log In</span>
+            </a>
+          </div>
+        <% } %>
+        
+        <% if(currUser){ %>
+          <!-- User Profile Dropdown -->
+          <div class="nav-item dropdown">
+            <a class="nav-link " href="#" role="button" 
+                aria-expanded="false">
+              <div class="user-avatar">
+                <i class="fas fa-user-circle"></i>
+              </div>
+              <span class="user-name d-none d-md-inline"><%= currUser.username %></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="/profile">
+                  <i class="fas fa-user me-2"></i>Profile
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/my-listings">
+                  <i class="fas fa-list me-2"></i>My Listings
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" href="/logout">
+                  <i class="fas fa-sign-out-alt me-2"></i>Log Out
+                </a>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Desktop Logout Button -->
+          <div class="nav-item d-none d-lg-block">
+            <a class="nav-link logout-link-desktop" href="/logout">
+              <i class="fas fa-sign-out-alt me-1"></i>
+              <span>Log Out</span>
+            </a>
+          </div>
+          
+          <!-- Mobile Logout Button -->
+          <div class="nav-item d-lg-none">
+            <a class="nav-link logout-link" href="/logout">
+              <i class="fas fa-sign-out-alt me-2"></i>
+              <span>Log Out</span>
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Search Overlay -->
+<div class="mobile-search-overlay" id="mobileSearchOverlay"></div>

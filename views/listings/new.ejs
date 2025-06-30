@@ -1,0 +1,59 @@
+<% layout('/layouts/boilerplate') -%>
+
+<div class="row justify-content-center align-items-center" style="min-height: 90vh; margin-top: 10px; margin-bottom: 10px;">
+  <div class="col-12 col-md-10 col-lg-8">
+    <div class="card shadow-lg p-4 border-0 rounded-4">
+      <div class="text-center mb-4">
+        <h2 class="fw-bold" style="color: #2563eb; letter-spacing: 1px;">Create New Listing</h2>
+      </div>
+      <form method="post" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" name="listing[title]" class="form-control form-control-lg" placeholder="Enter title" required>
+          <div class="valid-feedback">Title looks good!</div>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea name="listing[description]" class="form-control form-control-lg" placeholder="Describe your listing" required></textarea>
+          <div class="invalid-feedback">Describe your villa</div>
+        </div>
+        <div class="mb-3">
+          <label for="image" class="form-label">Upload Listing Image</label>
+          <input type="file" class="form-control" name="listing[image]" required>
+          <div class="invalid-feedback">Please upload an image</div>
+        </div>
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label for="price" class="form-label">Price</label>
+            <input class="form-control form-control-lg" name="listing[price]" placeholder="Enter price" required>
+            <div class="invalid-feedback">Please enter price</div>
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="country" class="form-label">Country</label>
+            <input type="text" class="form-control form-control-lg" name="listing[country]" placeholder="Enter country" required>
+            <div class="invalid-feedback">Please enter country name</div>
+          </div>
+          <div class="mb-3 col-md-4">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" class="form-control form-control-lg" name="listing[location]" placeholder="Enter location" required>
+            <div class="invalid-feedback">Enter a location</div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-lg w-100 text-white" style="background-color: #2563eb; border-radius: 1.5rem; font-weight: 600;">Add Listing</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+@media (max-width: 767.98px) {
+  .navbar .navbar-nav .btn,
+  .navbar .navbar-nav .nav-link {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  .navbar .navbar-brand {
+    font-size: 1.2rem;
+  }
+}
+</style>

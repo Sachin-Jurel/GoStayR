@@ -1,0 +1,206 @@
+<%- layout('/layouts/boilerplate') %>
+
+<!-- Hero Section -->
+<br />
+<section class="hero-section">
+  <div class="hero-overlay"></div>
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            <i class="fas fa-compass me-3"></i>Discover Your Perfect Stay
+          </h1>
+          <p class="hero-subtitle">
+            From cozy cottages to luxury villas, find extraordinary
+            accommodations around the world
+          </p>
+
+          <!-- Search Bar -->
+          <div class="search-container">
+            <form action="/listings" method="GET" class="search-form">
+              <div class="input-group">
+                <input
+                  type="text"
+                  name="location"
+                  class="form-control search-input"
+                  placeholder="Where do you want to go?"
+                  value="<%= locals.searchQuery || '' %>"
+                />
+                <button type="submit" class="btn search-btn">
+                  <i class="fas fa-search"></i> Search
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <i class="fas fa-home"></i>
+              <span><%= allListings.length %>+ Listings</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-globe"></i>
+              <span>Worldwide</span>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-star"></i>
+              <span>Top Rated</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<div class="container mt-5">
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h2 class="section-title">
+          <i class="fas fa-map-marker-alt me-2"></i>
+          <% if (locals.searchQuery) { %> Search Results for "<%= searchQuery
+          %>" <% } else { %> Explore Amazing Places <% } %>
+        </h2>
+        <p class="section-subtitle">
+          <% if (locals.searchQuery) { %> Found <%= allListings.length %>
+          listings matching your search <% } else { %> Discover unique
+          accommodations handpicked for unforgettable experiences <% } %>
+        </p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <div class="view-options">
+          <button class="btn btn-outline-primary active" id="grid-view">
+            <i class="fas fa-th"></i> Grid
+          </button>
+          <button class="btn btn-outline-primary" id="list-view">
+            <i class="fas fa-list"></i> List
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Listings Grid -->
+  <div class="listings-container" id="listings-grid">
+    <% if (allListings.length === 0) { %>
+    <div class="no-results">
+      <div class="text-center py-5">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h3>No listings found</h3>
+        <p class="text-muted">
+          <% if (locals.searchQuery) { %> Try adjusting your search terms or
+          browse all listings <% } else { %> Be the first to add a listing! <% }
+          %>
+        </p>
+        <% if (locals.searchQuery) { %>
+        <a href="/listings" class="btn btn-primary">View All Listings</a>
+        <% } else { %>
+        <a href="/listings/new" class="btn btn-primary"
+          >Add Your First Listing</a
+        >
+        <% } %>
+      </div>
+    </div>
+    <% } else { %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <% for(let listing of allListings){ %>
+      <div class="col">
+        <div class="listing-card">
+          <a href="/listings/<%= listing._id %>" class="card-link">
+            <div
+              class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden"
+            >
+              <div class="card-img-container">
+                <img
+                  src="<%= listing.image.url %>"
+                  class="card-img-top"
+                  alt="<%= listing.title %>"
+                />
+                <div class="card-img-overlay">
+                  <div class="overlay-content">
+                    <span class="price-badge">
+                      ₹<%= listing.price.toLocaleString("en-IN") %>/night
+                    </span>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <button
+                    class="btn btn-sm btn-light action-btn"
+                    title="Quick View"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="btn btn-sm btn-light action-btn" title="Save">
+                    <i class="fas fa-heart"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="listing-meta">
+                  <span class="location-badge">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <%= listing.location %>, <%= listing.country %>
+                  </span>
+                </div>
+                <h5 class="card-title"><%= listing.title %></h5>
+                <p class="card-text text-muted">
+                  <%= listing.description.length > 100 ?
+                  listing.description.substring(0, 100) + '...' :
+                  listing.description %>
+                </p>
+                <div class="listing-footer">
+                  <div class="rating">
+                    <i class="fas fa-star text-warning"></i>
+                    <span class="rating-text">4.8</span>
+                    <span class="review-count">(24 reviews)</span>
+                  </div>
+                  <div class="price">
+                    <span class="price-amount"
+                      >₹<%= listing.price.toLocaleString("en-IN") %></span
+                    >
+                    <span class="price-period">/night</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Load More Button -->
+  <% if (allListings.length > 0) { %>
+  <div class="text-center mt-5">
+    <button class="btn btn-outline-primary btn-lg load-more-btn">
+      <i class="fas fa-plus me-2"></i>Load More Listings
+    </button>
+  </div>
+  <% } %>
+</div>
+
+<!-- Call to Action Section -->
+<section class="cta-section mt-5">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-8">
+        <div class="cta-content">
+          <h3>Ready to Share Your Space?</h3>
+          <p>
+            Join thousands of hosts and start earning by sharing your unique
+            accommodation
+          </p>
+          <a href="/listings/new" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus me-2"></i>Add Your Listing
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
