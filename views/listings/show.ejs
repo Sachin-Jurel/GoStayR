@@ -114,4 +114,24 @@
       </div>
     </div>
   </div>
+  <div id="map" style="height: 400px; width: 100%; max-width: 800px; margin: 20px auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);"></div>
 </div>
+
+<script src="https://maps.gomaps.pro/maps/api/js?key=<%= process.env.MAP_TOKEN %>"></script>
+
+<script>
+function initMap() {
+  const map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 13,
+    center: { lat: 28.6139, lng: 77.2090 }
+  });
+
+  new google.maps.Marker({
+    position: { lat: 28.6139, lng: 77.2090 },
+    map: map,
+    title: "<%= listingData.location %>, <%= listingData.country %>"
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initMap);
+</script>

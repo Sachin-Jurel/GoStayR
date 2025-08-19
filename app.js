@@ -24,7 +24,8 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const user = require("./models/user.js");
 
-const dbUrl = process.env.ATLASDB_URL;
+const dbUrl = process.env.ATLASDB_URL || "mongodb://localhost:27017/GoStayR";
+const secret = process.env.SECRET || "dev-secret-key-change-in-production";
 
 // MongoDB Connection with better error handling
 async function main() {
@@ -33,9 +34,10 @@ async function main() {
       serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
       socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
     });
-    console.log("✅ Connected to MongoDB Atlas");
+    console.log("✅ Connected to MongoDB");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
+    console.log("💡 Make sure MongoDB is running locally or set ATLASDB_URL in .env file");
     process.exit(1); // Exit if database connection fails
   }
 }
@@ -46,14 +48,14 @@ main();
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: {
-    secret: process.env.SECRET,
+    secret: secret,
   },
   touchAfter: 24*3600
 })
 
 const sessionOptions = {
   store,
-  secret: process.env.SECRET,
+  secret: secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
