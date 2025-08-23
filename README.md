@@ -151,7 +151,7 @@ You will also need accounts for:
    CLOUD_NAME=your_cloudinary_cloud_name
    CLOUD_API_KEY=your_cloudinary_api_key
    CLOUD_API_SECRET=your_cloudinary_api_secret
-   MAP_API_Token=your_google_maps_api_key
+   MAP_TOKEN=your_google_maps_api_key
    SESSION_SECRET=a_strong_and_long_session_secret_key
    ```
    > **Note:** Your `ATLASDB_URL` should include the database name, e.g., `...mongodb.net/gostayr?retryWrites=true&w=majority`.

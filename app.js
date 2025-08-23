@@ -24,25 +24,24 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const user = require("./models/user.js");
 
-const dbUrl = process.env.ATLASDB_URL || "mongodb://localhost:27017/GoStayR";
-const secret = process.env.SECRET || "dev-secret-key-change-in-production";
+const dbUrl = process.env.ATLASDB_URL;
+const secret = process.env.SESSION_SECRET;
 
-// MongoDB Connection with better error handling
+
 async function main() {
   try {
     await mongoose.connect(dbUrl, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+      serverSelectionTimeoutMS: 5000, 
+      socketTimeoutMS: 45000, 
     });
     console.log("✅ Connected to MongoDB");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
     console.log("💡 Make sure MongoDB is running locally or set ATLASDB_URL in .env file");
-    process.exit(1); // Exit if database connection fails
+    process.exit(1);
   }
 }
 
-// Call the main function to establish connection
 main();
 
 const store = MongoStore.create({
@@ -88,7 +87,7 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-// Error handling middleware
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).render('error', { error: 'Something went wrong!' });
